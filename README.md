@@ -90,10 +90,10 @@ Pull requests welcome for spec text, schema, examples, and conformance vectors.
 
 ## Roadmap
 
-- **v0.1.x** — early adopter implementations across at least 3 frameworks (Claude Code, CrewAI, LangGraph). Extension namespace stable. Conformance suite runnable.
-- **v0.2** — JWT + Biscuit envelope profiles. OpenTelemetry semconv extension drafted.
-- **v0.3** — Submitted to [CSAI Foundation](https://cloudsecurityalliance.org/) for review. IETF individual draft as a profile of RFC 8693 + Transaction Tokens.
-- **v1.0** — Stable. Backwards-compatibility commitments. Multi-vendor implementer registry.
+- **v0.1.x** — early adopter implementations and feedback. Field names and semantics may shift as implementers report what's awkward. Conformance vectors expand.
+- **v1.0** — once the shape has stabilized through real use, commit to backwards-compatibility guarantees.
+
+Beyond v1.0 we'll let adoption decide. If multiple vendors implement ADCS, formalizing through a standards body becomes worth doing. If they don't, the spec remains a clear public artifact backed by a reference implementation.
 
 ## License
 
