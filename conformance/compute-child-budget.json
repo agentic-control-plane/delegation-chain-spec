@@ -1,0 +1,37 @@
+{
+  "specVersion": "0.1.0",
+  "operation": "computeChildBudget",
+  "description": "Test vectors for the computeChildBudget operation. Each case asserts that computeChildBudget(parentRemaining, childProfileMax) === expected.",
+  "cases": [
+    {
+      "name": "child max smaller than parent remaining — child wins",
+      "parentRemainingCents": 500,
+      "childProfileMaxCents": 100,
+      "expected": 100
+    },
+    {
+      "name": "parent remaining smaller than child max — parent wins",
+      "parentRemainingCents": 50,
+      "childProfileMaxCents": 200,
+      "expected": 50
+    },
+    {
+      "name": "equal — either wins, deterministic",
+      "parentRemainingCents": 100,
+      "childProfileMaxCents": 100,
+      "expected": 100
+    },
+    {
+      "name": "parent at zero — child gets zero regardless",
+      "parentRemainingCents": 0,
+      "childProfileMaxCents": 1000,
+      "expected": 0
+    },
+    {
+      "name": "child profile zero — child gets zero regardless",
+      "parentRemainingCents": 1000,
+      "childProfileMaxCents": 0,
+      "expected": 0
+    }
+  ]
+}

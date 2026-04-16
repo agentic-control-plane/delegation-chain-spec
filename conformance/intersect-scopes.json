@@ -1,0 +1,49 @@
+{
+  "specVersion": "0.1.0",
+  "operation": "intersectScopes",
+  "description": "Test vectors for the intersectScopes operation. Each case asserts that intersectScopes(parent, childProfile) === expected.",
+  "cases": [
+    {
+      "name": "empty parent yields empty",
+      "parent": [],
+      "childProfile": ["github.repos.read"],
+      "expected": []
+    },
+    {
+      "name": "empty child yields empty",
+      "parent": ["github.*"],
+      "childProfile": [],
+      "expected": []
+    },
+    {
+      "name": "exact match passes through",
+      "parent": ["github.repos.read", "slack.post"],
+      "childProfile": ["github.repos.read"],
+      "expected": ["github.repos.read"]
+    },
+    {
+      "name": "wildcard parent matches specific child",
+      "parent": ["github.*"],
+      "childProfile": ["github.repos.create", "github.issues.write"],
+      "expected": ["github.repos.create", "github.issues.write"]
+    },
+    {
+      "name": "specific parent does not widen wildcard child",
+      "parent": ["github.repos.read"],
+      "childProfile": ["github.*"],
+      "expected": []
+    },
+    {
+      "name": "non-matching scopes drop",
+      "parent": ["github.*"],
+      "childProfile": ["github.repos.read", "slack.post"],
+      "expected": ["github.repos.read"]
+    },
+    {
+      "name": "multiple wildcards",
+      "parent": ["github.*", "slack.*"],
+      "childProfile": ["github.repos.read", "slack.post", "stripe.charge"],
+      "expected": ["github.repos.read", "slack.post"]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "_description": "Example ADCS chain for a CrewAI A2A delegation. The user (alice) triggered a strategy crew. The orchestrator agent in that crew delegated a research sub-task to a remote researcher crew exposed via A2AServerConfig. The chain captures the full hop with scope intersection (no slack access for the researcher) and budget propagation (researcher capped at $1.00 of the orchestrator's $5.00).",
+  "originSub": "auth0|alice@acme.com",
+  "originClaims": {
+    "email": "alice@acme.com",
+    "groups": ["strategy-team", "research-allowlist"]
+  },
+  "links": [
+    {
+      "agentProfileId": "strategy-orchestrator",
+      "agentRunId": "run_orch_2026041610",
+      "agentName": "Strategy orchestrator",
+      "effectiveScopes": ["web.*", "slack.post", "internal-research.delegate"],
+      "effectiveTools": ["web_search", "slack.post_message", "research.delegate"],
+      "remainingBudgetCents": 350,
+      "delegatedAt": "2026-04-16T10:00:00Z"
+    },
+    {
+      "agentProfileId": "remote-researcher",
+      "agentRunId": "run_res_2026041611",
+      "agentName": "Remote researcher (CrewAI A2A)",
+      "effectiveScopes": ["web.*"],
+      "effectiveTools": ["web_search", "hn_search"],
+      "remainingBudgetCents": 100,
+      "delegatedAt": "2026-04-16T10:01:23Z"
+    }
+  ],
+  "depth": 2
+}

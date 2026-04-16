@@ -1,0 +1,34 @@
+{
+  "_description": "Example ADCS chain for a LangGraph supervisor pattern. Alice triggered a graph; the supervisor node routed to a coder node which routed to a reviewer node. Each node in the graph corresponds to one ADCS link. Tools narrow at each hop (coder loses web access, reviewer loses code-write access).",
+  "originSub": "auth0|alice@acme.com",
+  "links": [
+    {
+      "agentProfileId": "supervisor",
+      "agentRunId": "graph_run_42_supervisor",
+      "agentName": "Supervisor",
+      "effectiveScopes": ["web.*", "github.*", "tests.run"],
+      "effectiveTools": ["route_to_worker"],
+      "remainingBudgetCents": 800,
+      "delegatedAt": "2026-04-16T11:00:00Z"
+    },
+    {
+      "agentProfileId": "coder",
+      "agentRunId": "graph_run_42_coder",
+      "agentName": "Coder",
+      "effectiveScopes": ["github.*", "tests.run"],
+      "effectiveTools": ["github.diff", "github.commit", "tests.run"],
+      "remainingBudgetCents": 300,
+      "delegatedAt": "2026-04-16T11:00:14Z"
+    },
+    {
+      "agentProfileId": "reviewer",
+      "agentRunId": "graph_run_42_reviewer",
+      "agentName": "Reviewer",
+      "effectiveScopes": ["github.read", "github.pr.comment"],
+      "effectiveTools": ["github.diff", "github.pr.comment"],
+      "remainingBudgetCents": 80,
+      "delegatedAt": "2026-04-16T11:01:48Z"
+    }
+  ],
+  "depth": 3
+}

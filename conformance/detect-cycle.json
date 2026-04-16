@@ -1,0 +1,50 @@
+{
+  "specVersion": "0.1.0",
+  "operation": "detectCycle",
+  "description": "Test vectors for cycle detection. Each case provides a chain and a target profile ID; expected is whether detectCycle should return true (cycle present, reject delegation).",
+  "cases": [
+    {
+      "name": "empty chain — no cycle possible",
+      "chain": { "originSub": "alice", "links": [], "depth": 0 },
+      "targetProfileId": "researcher",
+      "expected": false
+    },
+    {
+      "name": "target not in chain — no cycle",
+      "chain": {
+        "originSub": "alice",
+        "links": [
+          { "agentProfileId": "planner", "agentRunId": "r1", "agentName": "Planner", "effectiveScopes": [], "effectiveTools": [], "remainingBudgetCents": 100, "delegatedAt": "2026-04-16T10:00:00Z" }
+        ],
+        "depth": 1
+      },
+      "targetProfileId": "researcher",
+      "expected": false
+    },
+    {
+      "name": "target equals current link — cycle (self-delegation)",
+      "chain": {
+        "originSub": "alice",
+        "links": [
+          { "agentProfileId": "planner", "agentRunId": "r1", "agentName": "Planner", "effectiveScopes": [], "effectiveTools": [], "remainingBudgetCents": 100, "delegatedAt": "2026-04-16T10:00:00Z" }
+        ],
+        "depth": 1
+      },
+      "targetProfileId": "planner",
+      "expected": true
+    },
+    {
+      "name": "target equals an ancestor — cycle (mutual recursion)",
+      "chain": {
+        "originSub": "alice",
+        "links": [
+          { "agentProfileId": "planner", "agentRunId": "r1", "agentName": "Planner", "effectiveScopes": [], "effectiveTools": [], "remainingBudgetCents": 100, "delegatedAt": "2026-04-16T10:00:00Z" },
+          { "agentProfileId": "researcher", "agentRunId": "r2", "agentName": "Researcher", "effectiveScopes": [], "effectiveTools": [], "remainingBudgetCents": 50, "delegatedAt": "2026-04-16T10:01:00Z" }
+        ],
+        "depth": 2
+      },
+      "targetProfileId": "planner",
+      "expected": true
+    }
+  ]
+}

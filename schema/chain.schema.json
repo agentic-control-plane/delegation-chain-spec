@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/agentic-control-plane/delegation-chain-spec/schema/chain.schema.json",
+  "title": "ADCS Delegation Chain v0.1.0",
+  "description": "Agent Delegation Chain Specification (ADCS) v0.1.0 — chain data structure recording the human at the root and every agent hop with intersected scopes, propagated budget, and runtime + type identity.",
+  "type": "object",
+  "required": ["originSub", "links", "depth"],
+  "additionalProperties": true,
+  "properties": {
+    "originSub": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Stable identifier of the origin principal. MUST NOT change at any depth."
+    },
+    "originClaims": {
+      "type": "object",
+      "description": "The principal's identity claims at chain creation, preserved verbatim."
+    },
+    "links": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/DelegationLink" },
+      "description": "Ordered array of agent hops. links[0] is the first agent invoked by the origin principal."
+    },
+    "depth": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of links. MUST equal links.length."
+    },
+    "vendorExtensions": {
+      "type": "object",
+      "description": "Vendor-specific extension fields, namespaced to avoid collision with future ADCS revisions."
+    }
+  },
+  "$defs": {
+    "DelegationLink": {
+      "type": "object",
+      "required": [
+        "agentProfileId",
+        "agentRunId",
+        "agentName",
+        "effectiveScopes",
+        "effectiveTools",
+        "remainingBudgetCents",
+        "delegatedAt"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "agentProfileId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Stable type identifier of the agent at this hop."
+        },
+        "agentRunId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Unique-per-execution identifier. Distinct from agentProfileId."
+        },
+        "agentName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable identifier for dashboards and audit logs."
+        },
+        "effectiveScopes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "OAuth scopes this link is currently authorized to use. Result of intersectScopes."
+        },
+        "effectiveTools": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Tool identifiers this link is currently authorized to invoke. Result of intersectTools."
+        },
+        "remainingBudgetCents": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Non-negative integer remaining budget in cents. Result of computeChildBudget; decremented as the agent runs."
+        },
+        "delegatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "RFC 3339 timestamp of when this link was added."
+        },
+        "vendorExtensions": {
+          "type": "object",
+          "description": "Vendor-specific extension fields."
+        }
+      }
+    }
+  }
+}

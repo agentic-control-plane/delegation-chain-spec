@@ -1,0 +1,29 @@
+{
+  "_description": "Example ADCS chain for a Claude Code interactive session that spawned an Explore subagent. The user (alice) is driving Claude Code; the main session delegated a research task via Claude Code's Agent tool with subagent_type='Explore'. Notice the Explore subagent inherited a narrowed tool set (no Bash) and has its own runId distinct from the parent's.",
+  "originSub": "firebase|9f8b3c2a-alice",
+  "originClaims": {
+    "email": "alice@acme.com",
+    "iss": "https://securetoken.google.com/acme-prod"
+  },
+  "links": [
+    {
+      "agentProfileId": "claude-code-interactive",
+      "agentRunId": "session_20260416_103200",
+      "agentName": "Claude Code (interactive)",
+      "effectiveScopes": ["fs.*", "shell.*", "web.*"],
+      "effectiveTools": ["Bash", "Read", "Write", "Edit", "WebFetch", "Agent"],
+      "remainingBudgetCents": 1000,
+      "delegatedAt": "2026-04-16T10:32:00Z"
+    },
+    {
+      "agentProfileId": "claude-code-subagent.Explore",
+      "agentRunId": "subagent_20260416_103412_explore",
+      "agentName": "Claude Code Explore subagent",
+      "effectiveScopes": ["fs.read", "web.read"],
+      "effectiveTools": ["Read", "Grep", "Glob", "WebFetch"],
+      "remainingBudgetCents": 200,
+      "delegatedAt": "2026-04-16T10:34:12Z"
+    }
+  ],
+  "depth": 2
+}
