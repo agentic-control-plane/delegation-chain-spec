@@ -6,7 +6,7 @@
 &nbsp; · &nbsp; [JSON Schema](./schema/chain.schema.json)
 &nbsp; · &nbsp; [Examples](./examples/)
 &nbsp; · &nbsp; [Conformance test vectors](./conformance/)
-&nbsp; · &nbsp; [Reference implementation (Apache-2)](https://github.com/davidcrowe/gatewaystack-connect/blob/main/apps/tenant-gateway/src/integrations/agents/delegation.ts)
+&nbsp; · &nbsp; [Conformance vectors](conformance/) — extracted from the production implementation
 
 ---
 
@@ -66,10 +66,11 @@ We're explicit about these because **opinions are how a spec creates leverage.**
 
 ## Reference implementation
 
-The reference implementation is the [Agentic Control Plane gateway](https://github.com/davidcrowe/gatewaystack-connect):
+The reference implementation runs inside the [Agentic Control Plane](https://agenticcontrolplane.com) production gateway (closed source). What's public and verifiable here:
 
-- [`delegation.ts`](https://github.com/davidcrowe/gatewaystack-connect/blob/main/apps/tenant-gateway/src/integrations/agents/delegation.ts) — `intersectScopes`, `intersectTools`, `computeChildBudget`, `detectCycle`, `buildChildChain`
-- [`hookGovernance.ts`](https://github.com/davidcrowe/gatewaystack-connect/blob/main/apps/tenant-gateway/src/govern/hookGovernance.ts) — chain merge into the policy evaluator
+- [`conformance/`](conformance/) — test vectors extracted from that implementation: scope/tool intersection, child budget computation, cycle detection, chain construction
+- [`schema/chain.schema.json`](schema/chain.schema.json) — the wire format, JSON Schema
+- The open-source [GatewayStack](https://github.com/agentic-control-plane/GatewayStack) runtime provides the identity and policy layers a conforming implementation composes with
 - Audit emission via `emitLogEvent` in `mcp/logging.ts`
 
 Used in production by Reducibl, Inc. for [Agentic Control Plane](https://agenticcontrolplane.com/).
