@@ -8,6 +8,8 @@
 &nbsp; · &nbsp; [Conformance test vectors](./conformance/)
 &nbsp; · &nbsp; [Conformance vectors](conformance/) — extracted from the production implementation
 
+Background reading: [what is an agent delegation chain?](https://agenticcontrolplane.com/what-is-an-agent-delegation-chain) · [agent-to-agent governance](https://agenticcontrolplane.com/agent-to-agent) · [the spec, rendered](https://agenticcontrolplane.com/spec/delegation-chain)
+
 ---
 
 ## Why this exists
