@@ -3,7 +3,7 @@
 **Version:** 0.1.0
 **Status:** Draft (open for comment)
 **Editor:** David Crowe ([@davidcrowe](https://github.com/davidcrowe)), Reducibl, Inc.
-**Reference implementation:** [agentic-control-plane/gatewaystack-connect](https://github.com/davidcrowe/gatewaystack-connect) (`apps/tenant-gateway/src/integrations/agents/delegation.ts`)
+**Reference implementation:** [agentic-control-plane/acp-governance-sdks](https://github.com/agentic-control-plane/acp-governance-sdks) (client side); the server-side chain verifier runs in the hosted ACP gateway
 
 ## Abstract
 
