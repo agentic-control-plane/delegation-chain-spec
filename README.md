@@ -1,12 +1,11 @@
 # Agent Delegation Chain Specification (ADCS)
 
-> An open spec for **agent-to-agent delegation chains** — the chain of A2A hops that begins with a human and extends through autonomous agents. Defines a JSON data structure plus normative semantics for scope narrowing, budget propagation, cycle prevention, identity preservation, and audit emission.
+> An open spec for **agent-to-agent delegation chains**: the chain of A2A hops that begins with a human and extends through autonomous agents. Defines a JSON data structure plus normative semantics for scope narrowing, budget propagation, cycle prevention, identity preservation, and audit emission.
 
 [**Read the spec → `SPEC.md`**](./SPEC.md)
 &nbsp; · &nbsp; [JSON Schema](./schema/chain.schema.json)
 &nbsp; · &nbsp; [Examples](./examples/)
-&nbsp; · &nbsp; [Conformance test vectors](./conformance/)
-&nbsp; · &nbsp; [Conformance vectors](conformance/) — extracted from the production implementation
+&nbsp; · &nbsp; [Conformance test vectors](./conformance/), extracted from the production implementation
 
 Background reading: [what is an agent delegation chain?](https://agenticcontrolplane.com/what-is-an-agent-delegation-chain) · [agent-to-agent governance](https://agenticcontrolplane.com/agent-to-agent) · [the spec, rendered](https://agenticcontrolplane.com/spec/delegation-chain)
 
@@ -33,53 +32,50 @@ A normative JSON data structure for the chain, plus runtime rules that make the 
 | **Type vs runtime identity** | Distinct `agentProfileId` (stable type) and `agentRunId` (per-execution) | Audit logs can correlate the calls of one specific run, even if the agent type ran in parallel |
 | **Audit emission shape** | Every governed tool call MUST emit an entry containing the full chain | Logs are reconstructable; SIEM integration is a query, not a custom pipeline |
 
-The spec is ~2,500 words. Read it: [`SPEC.md`](./SPEC.md).
+The spec is about 2,200 words. Read it: [`SPEC.md`](./SPEC.md).
 
 ## How ADCS relates to other specs
 
 | Spec | What it covers | What ADCS adds | Relationship |
 |---|---|---|---|
-| **[A2A Protocol](https://a2a-protocol.org/)** | Transport, discovery, auth handoff between agents | The chain semantics A2A explicitly leaves to a higher layer | **Layers on top** — an A2A invocation MAY carry an ADCS chain |
-| **[MCP](https://modelcontextprotocol.io/)** | Tool invocation between agent and tool | The chain context that wraps each MCP `tools/call` | **Wraps MCP** — every governed MCP call emits an ADCS audit entry |
-| **[RFC 8693 OAuth Token Exchange](https://www.rfc-editor.org/rfc/rfc8693.html)** | Nested `act` claims for delegation | Scope intersection + budget + tool sets + runtime identity | **Profile of** — ADCS chains MAY be expressed as JWTs with nested `act` |
-| **[OAuth Transaction Tokens (draft)](https://datatracker.ietf.org/doc/draft-ietf-oauth-transaction-tokens/)** | Scope monotonic reduction across call chains | Set-intersection (stricter), budget, agent-typed identity | **Strictly stronger** intersection rule |
-| **[Macaroons / Biscuits](https://doc.biscuitsec.org/)** | Capability tokens with cryptographic attenuation | A standardized JSON shape for the chain payload | **Compatible envelope** — ADCS chains MAY be wrapped in Biscuit |
+| **[A2A Protocol](https://a2a-protocol.org/)** | Transport, discovery, auth handoff between agents | The chain semantics A2A explicitly leaves to a higher layer | **Layers on top**: an A2A invocation MAY carry an ADCS chain |
+| **[MCP](https://modelcontextprotocol.io/)** | Tool invocation between agent and tool | The chain context that wraps each MCP `tools/call` | **Wraps MCP**: every governed MCP call emits an ADCS audit entry |
+| **[RFC 8693 OAuth Token Exchange](https://www.rfc-editor.org/rfc/rfc8693.html)** | Nested `act` claims for delegation | Scope intersection + budget + tool sets + runtime identity | **Profile of**: ADCS chains MAY be expressed as JWTs with nested `act` |
+| **[OAuth Transaction Tokens (draft)](https://datatracker.ietf.org/doc/draft-ietf-oauth-transaction-tokens/)** | Scope monotonic reduction across call chains | Set-intersection (stricter), budget, agent-typed identity | Intersection, which is stricter than monotonic reduction |
+| **[Macaroons / Biscuits](https://doc.biscuitsec.org/)** | Capability tokens with cryptographic attenuation | A standardized JSON shape for the chain payload | **Compatible envelope**: ADCS chains MAY be wrapped in Biscuit |
 | **[OIDC-A (arxiv 2509.25974)](https://arxiv.org/abs/2509.25974)** | `delegator_sub` + `delegation_chain` claim names | Concrete data shape, budget, runtime identity, conformance vectors | **Acknowledges as prior art**; chooses different vocabulary to avoid OIDC namespace collision |
-| **[Agent Identity Protocol (arxiv 2603.24775)](https://arxiv.org/abs/2603.24775)** | Invocation-Bound Capability Tokens with Biscuit + Datalog | JSON-first, no Datalog; budget propagation; simpler audit shape | **Sister spec** — different design choices for different audiences |
-| **[OpenTelemetry GenAI semconv](https://opentelemetry.io/docs/specs/semconv/gen-ai/)** | Span attributes for agent invocation | The chain attributes the semconv doesn't yet cover | **Emits to** — ADCS audit entries map cleanly onto OTel attributes |
+| **[Agent Identity Protocol (arxiv 2603.24775)](https://arxiv.org/abs/2603.24775)** | Invocation-Bound Capability Tokens with Biscuit + Datalog | JSON-first, no Datalog; budget propagation; simpler audit shape | **Sister spec**: different design choices for different audiences |
+| **[OpenTelemetry GenAI semconv](https://opentelemetry.io/docs/specs/semconv/gen-ai/)** | Span attributes for agent invocation | The chain attributes the semconv doesn't yet cover | **Emits to**: ADCS audit entries map cleanly onto OTel attributes |
 
 ADCS is **deliberately one piece** of the agent governance puzzle. It does not specify how agents authenticate, how they discover each other, or how they execute. It specifies the chain that records what happened.
 
 ## Non-normative design opinions
 
-The spec has opinions. Here are the load-bearing ones, with the alternatives we considered and rejected:
+The spec makes some design choices. These are the ones that matter, with the alternatives we considered and rejected:
 
 **Most-restrictive wins (intersection), not last-actor wins.** RFC 8693's `act` claim is "current actor wins, prior actors recorded." We chose intersection because least-privilege at every hop is a stronger security posture than last-actor-replaces-prior. A delegation chain isn't a stack of credentials; it's a narrowing of authority.
 
-**Budget propagation is a first-class field.** No competing spec we surveyed has it. We added it because runaway loops in deep multi-agent chains are the #1 production failure mode, and bounding them at the data-structure level is cheap and load-bearing.
+**Budget propagation is a first-class field.** The other specs in the table above don't define it. We added it because runaway loops are a common failure mode in deep multi-agent chains, and bounding them at the data-structure level is cheap.
 
 **Runtime identity (`agentRunId`) is distinct from type identity (`agentProfileId`).** Audit logs need to correlate the calls of *this specific execution*, not just "calls by any instance of agent X." Two parallel runs of the same agent type get distinct chains.
 
-**JSON-first, not Datalog-first.** The Agent Identity Protocol uses Biscuit + Datalog policies for chained delegations. That's mathematically powerful and audit-ready for advanced users. We chose JSON as the primary shape because it's readable by every CISO, every SOC analyst, and every junior engineer in the room — and a Biscuit envelope is still possible as an optional layer (§10).
+**JSON-first, not Datalog-first.** The Agent Identity Protocol uses Biscuit + Datalog policies for chained delegations. That is expressive and audit-ready for advanced users. We chose JSON as the primary shape because it's readable by security reviewers, SOC analysts and junior engineers alike, and a Biscuit envelope is still possible as an optional layer (§10).
 
-**`originSub` invariant, not actor-update semantics.** Some delegation models replace `actor` at each hop. We chose to preserve the human at the root absolutely, because *who is accountable* is a different question from *who is currently executing* — and the second question is already answered by the last link in the chain.
-
-We're explicit about these because **opinions are how a spec creates leverage.** A spec without opinions describes data; a spec with opinions describes behavior. Behavior is what makes things compose.
+**`originSub` invariant, not actor-update semantics.** Some delegation models replace `actor` at each hop. We chose to preserve the human at the root absolutely, because *who is accountable* is a different question from *who is currently executing*, and the last link in the chain already answers the second.
 
 ## Reference implementation
 
 The reference implementation runs inside the [Agentic Control Plane](https://agenticcontrolplane.com) production gateway (closed source). What's public and verifiable here:
 
-- [`conformance/`](conformance/) — test vectors extracted from that implementation: scope/tool intersection, child budget computation, cycle detection, chain construction
-- [`schema/chain.schema.json`](schema/chain.schema.json) — the wire format, JSON Schema
+- [`conformance/`](conformance/): test vectors extracted from that implementation: scope/tool intersection, child budget computation, cycle detection
+- [`schema/chain.schema.json`](schema/chain.schema.json): the wire format, JSON Schema
 - The open-source [GatewayStack](https://github.com/agentic-control-plane/GatewayStack) runtime provides the identity and policy layers a conforming implementation composes with
-- Audit emission via `emitLogEvent` in `mcp/logging.ts`
 
 Used in production by Reducibl, Inc. for [Agentic Control Plane](https://agenticcontrolplane.com/).
 
 ## Status and process
 
-ADCS is **v0.1.0 — Draft**. Field names and semantics MAY change before v1.0. Once v1.0 ships, backwards-compatibility commitments apply.
+ADCS is **v0.1.0, Draft**. Field names and semantics MAY change before v1.0. Once v1.0 ships, backwards-compatibility commitments apply.
 
 We're seeking implementer feedback. Open an issue with:
 
@@ -87,24 +83,24 @@ We're seeking implementer feedback. Open an issue with:
 - An ambiguity in the spec
 - A field name you'd argue against
 - A normative semantic you'd argue for
-- An implementation report ("we built ADCS in [language] — here's what was hard")
+- An implementation report ("we built ADCS in [language], and here's what was hard")
 
 Pull requests welcome for spec text, schema, examples, and conformance vectors.
 
 ## Roadmap
 
-- **v0.1.x** — early adopter implementations and feedback. Field names and semantics may shift as implementers report what's awkward. Conformance vectors expand.
-- **v1.0** — once the shape has stabilized through real use, commit to backwards-compatibility guarantees.
+- **v0.1.x:** early adopter implementations and feedback. Field names and semantics may shift as implementers report what's awkward. Conformance vectors expand.
+- **v1.0:** once the shape has stabilized through real use, commit to backwards-compatibility guarantees.
 
 Beyond v1.0 we'll let adoption decide. If multiple vendors implement ADCS, formalizing through a standards body becomes worth doing. If they don't, the spec remains a clear public artifact backed by a reference implementation.
 
 ## License
 
-Specification text: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — copy, adapt, redistribute with attribution.
-JSON Schema, examples, conformance vectors: [MIT](https://opensource.org/licenses/MIT) — use freely.
+Specification text: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/): copy, adapt, redistribute with attribution.
+JSON Schema, examples, conformance vectors: [MIT](https://opensource.org/licenses/MIT): use freely.
 
 ## Contact
 
-- Editor: David Crowe — [david@reducibl.com](mailto:david@reducibl.com)
+- Editor: David Crowe, [david@reducibl.com](mailto:david@reducibl.com)
 - GitHub: [agentic-control-plane/delegation-chain-spec](https://github.com/agentic-control-plane/delegation-chain-spec)
 - Reducibl: [agenticcontrolplane.com](https://agenticcontrolplane.com)
