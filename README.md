@@ -67,7 +67,7 @@ The spec makes some design choices. These are the ones that matter, with the alt
 
 The reference implementation runs inside the [Agentic Control Plane](https://agenticcontrolplane.com) production gateway (closed source). What's public and verifiable here:
 
-- [`conformance/`](conformance/): test vectors extracted from that implementation: scope/tool intersection, child budget computation, cycle detection, chain construction
+- [`conformance/`](conformance/): test vectors extracted from that implementation: scope/tool intersection, child budget computation, cycle detection
 - [`schema/chain.schema.json`](schema/chain.schema.json): the wire format, JSON Schema
 - The open-source [GatewayStack](https://github.com/agentic-control-plane/GatewayStack) runtime provides the identity and policy layers a conforming implementation composes with
 
